@@ -48,7 +48,7 @@
 (deftest snapshot
   (testing "snapshot"
     (doseq [[sn df exp] snapshot-differential-table]
-      (is (= exp (merge-elements3 sn df))))))
+      (is (= exp (merge-elements sn df))))))
 
 (defn resource? [schema]
   (and (= (:resourceType schema) "StructureDefinition")

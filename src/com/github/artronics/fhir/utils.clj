@@ -1,37 +1,27 @@
 (ns com.github.artronics.fhir.utils
   (:require [clojure.string :as string]))
 
-(defn eq-id? [a b] (= (:id a) (:id b)))
+(defn- eq-id? [a b] (= (:id a) (:id b)))
 
-(defn apply-diff [snapshot differentials]
+(defn- apply-diff [snapshot differentials]
+  "Find matching id in differentials and merge it to snapshot.
+  Returns [merged , differentials minus matched] or
+  identity if no match was found"
   (let [matched-df? (fn [df-i] (when (eq-id? snapshot df-i) df-i))
         matched-df (some matched-df? differentials)]
     (if matched-df
       [(merge snapshot matched-df) (remove #(= % matched-df) differentials)]
       [snapshot differentials])))
 
-(defn apply-diff-reducer
+(defn- apply-diff-reducer-fn
   [[acc df-x] sn-i]
   (let [[merged df-x] (apply-diff sn-i df-x)]
     [(conj acc merged) df-x]))
 
-(defn merge-elements3 [sn df]
-  (let [[acc df-x] (reduce apply-diff-reducer [[] df] sn)]
+(defn merge-elements [sn df]
+  (let [[acc df-x] (reduce apply-diff-reducer-fn [[] df] sn)]
     ;; concat whatever is left from differentials i.e. the one that didn't match with any id in snapshots
     (concat acc df-x)))
-
-(defn merge-elements2 [sn df]
-  (let [conj-nil #(if %2 (conj %1 %2) %1)]
-    (loop [elements [], sn sn, df df]
-      (let [sn0 (first sn)
-            sn-x (rest sn)
-            [merged df-x] (apply-diff sn0 df)
-            elements (conj-nil elements merged)]
-        (if (seq sn-x)
-          (if (seq df-x)
-            (recur elements sn-x df-x)
-            (concat elements sn-x))
-          (concat elements df-x))))))
 
 (defn cardinality [element]
   (let [[base-min base-max derived-min derived-max]
