@@ -1,0 +1,5 @@
+{{ package }}
+
+data class {{ id }} (
+{% for field in fields %}{{ field }}{% endfor %}
+)
