@@ -1,9 +1,12 @@
 (ns com.github.artronics.fhir.utils_test
   (:require [clojure.test :refer :all]
             [com.github.artronics.fhir.utils :refer :all]
+            [com.github.artronics.fhir.schema.specs :refer :all]
             [clojure.data.json :as json]
             [clojure.spec.alpha :as s]
-            [clojure.java.io :as io]))
+            [clojure.java.io :as io]
+            [clojure.spec.gen.alpha :as gen]
+            [clojure.pprint :as pp]))
 
 (def sample-file (-> "test/MedicationRequest.json" io/resource io/file))
 (def mr-file (-> "test/StructureDefinition-MedicationRequest.json" io/resource io/file))
@@ -36,7 +39,7 @@
    ;; Merge everything
    [[{:id 1 :a "a"}]
     [{:id 2 :b "b"} {:id 3 :c "c"}]
-    [{:id 1 :a "a"} {:id 2 :b "b"} {:id 3 :c "c"}]]
+    [{:id 2 :b "b"} {:id 3 :c "c"} {:id 1 :a "a"}]]
 
    ;; Preserve snapshot differences (NOTE: I'm not sure if this should happen in FHIR)
    [[{:id 1 :a "a" :b "b"}]

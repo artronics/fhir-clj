@@ -1,27 +1,37 @@
 (ns com.github.artronics.fhir.utils
-  (:require [clojure.string :as string]))
+  (:require [clojure.string :as string]
+            [clojure.spec.alpha :as s]
+            [com.github.artronics.fhir.schema.specs :refer :all]))
 
 (defn- eq-id? [a b] (= (:id a) (:id b)))
 
-(defn- apply-diff [snapshot differentials]
-  "Find matching id in differentials and merge it to snapshot.
-  Returns [merged , differentials minus matched] or
+(defn- apply-diff [differential snapshots]
+  "Find matching id in snapshots and merge it to differential to it.
+  Returns [merged , snapshots minus matched] or
   identity if no match was found"
-  (let [matched-df? (fn [df-i] (when (eq-id? snapshot df-i) df-i))
-        matched-df (some matched-df? differentials)]
-    (if matched-df
-      [(merge snapshot matched-df) (remove #(= % matched-df) differentials)]
-      [snapshot differentials])))
+  (let [matched-sn? (fn [sn-i] (when (eq-id? differential sn-i) sn-i))
+        matched-sn (some matched-sn? snapshots)]
+    (if matched-sn
+      [(merge matched-sn differential) (remove #(= % matched-sn) snapshots)]
+      [differential snapshots])))
 
 (defn- apply-diff-reducer-fn
-  [[acc df-x] sn-i]
-  (let [[merged df-x] (apply-diff sn-i df-x)]
-    [(conj acc merged) df-x]))
+  [[acc sn-x] df-i]
+  (let [[merged sn-x] (apply-diff df-i sn-x)]
+    [(conj acc merged) sn-x]))
+
 
 (defn merge-elements [sn df]
-  (let [[acc df-x] (reduce apply-diff-reducer-fn [[] df] sn)]
-    ;; concat whatever is left from differentials i.e. the one that didn't match with any id in snapshots
-    (concat acc df-x)))
+  (let [[acc sn-x] (reduce apply-diff-reducer-fn [[] sn] df)]
+    ;; concat whatever is left from snapshots i.e. the one that didn't match with any id in differentials.
+    (concat acc sn-x)))
+
+(s/fdef merge-elements
+        :args (s/cat :snapshot :fhir.schema/element
+                     :differentials :fhir.schema/element)
+        :ret :fhir.schema/element
+        :fn (s/and #(-> % :ret empty?)
+                   #(-> % :ret empty?)))
 
 (defn cardinality [element]
   (let [[base-min base-max derived-min derived-max]
