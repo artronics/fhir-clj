@@ -4,9 +4,9 @@
             [clojure.test.check.generators :as c]))
 
 (s/def ::id
-  (s/with-gen (s/and string? not-empty)
-              #(gen/fmap (fn [id] (clojure.string/replace id #"[\.\" ]" ""))
-                         (gen/not-empty (gen/string-ascii)))))
+  (s/with-gen string?
+              ;; uuid guarantees uniqueness. It's not what actually goes into :id in schema
+              #(gen/fmap (fn [uuid] (.toString uuid)) (gen/uuid))))
 
 (s/def :fhir.schema.element/id ::id)
 (s/def :fhir.schema.element/path ::id)
