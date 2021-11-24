@@ -5,8 +5,10 @@
             [clojure.data.json :as json]
             [clojure.spec.alpha :as s]
             [clojure.java.io :as io]
-            [clojure.spec.gen.alpha :as gen]
-            [clojure.pprint :as pp]))
+            [clojure.core.logic :as l]
+            [clojure.spec.test.alpha :as stest]))
+
+
 
 (def sample-file (-> "test/MedicationRequest.json" io/resource io/file))
 (def mr-file (-> "test/StructureDefinition-MedicationRequest.json" io/resource io/file))
@@ -48,17 +50,8 @@
 
 (def cardinality-table
   [[{:base {:min 0 :max "1"}} :optional]])
+
 (deftest snapshot
   (testing "snapshot"
     (doseq [[sn df exp] snapshot-differential-table]
       (is (= exp (merge-elements sn df))))))
-
-(defn resource? [schema]
-  (and (= (:resourceType schema) "StructureDefinition")
-       (= (:kind schema) "resource")))
-
-(s/def ::not-blank #(not (clojure.string/blank? %)))
-(s/def ::id (s/and string? ::not-blank))
-(s/def ::MedicationRequest (s/keys :req-un [::id]))
-
-(defn write-file [schema] (spit "out.json" (json/write-str schema)))

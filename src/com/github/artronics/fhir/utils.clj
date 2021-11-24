@@ -26,12 +26,26 @@
     ;; concat whatever is left from snapshots i.e. the one that didn't match with any id in differentials.
     (concat acc sn-x)))
 
+(defn- check-returns [rets sn df]
+  (let [sc (count sn)
+        dc (count df)
+        rc (count rets)]
+    (and (<= (max sc dc) rc (+ sc dc))
+         (let [check-merge (fn [ret-i]
+                             (let [find-eq (fn [nx] (first (filter #(eq-id? % ret-i) nx)))
+                                   matched-sn (find-eq sn)
+                                   matched-df (find-eq df)]
+                               (= ret-i (merge matched-sn matched-df))))]
+           (every? check-merge rets)))))
+
 (s/fdef merge-elements
         :args (s/cat :snapshot :fhir.schema/element
                      :differentials :fhir.schema/element)
         :ret :fhir.schema/element
-        :fn (s/and #(-> % :ret empty?)
-                   #(-> % :ret empty?)))
+        :fn #(let [ret (-> % :ret)
+                   sn (-> % :args :snapshot)
+                   df (-> % :args :differentials)]
+               (check-returns ret sn df)))
 
 (defn cardinality [element]
   (let [[base-min base-max derived-min derived-max]
