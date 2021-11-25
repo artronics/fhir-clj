@@ -2,6 +2,7 @@
 repl
 examples-json
 package
+node_modules
 /target
 /classes
 /checkouts
