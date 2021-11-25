@@ -1,0 +1,59 @@
+{
+  "resourceType": "StructureDefinition",
+  "id": "MedicationRequest",
+  "kind": "resource",
+  "abstract": false,
+  "type": "MedicationRequest",
+  "snapshot": {
+    "element": [
+      {
+        "id": "MedicationRequest",
+        "path": "MedicationRequest",
+        "short": "Ordering of medication for patient or group",
+        "definition": "An order or request for both supply of the medication and the instructions for administration of the medication to a patient. The resource is called \"MedicationRequest\" rather than \"MedicationPrescription\" or \"MedicationOrder\" to generalize the use across inpatient and outpatient settings, including care plans, etc., and to harmonize with workflow patterns.",
+        "alias": [
+          "Prescription",
+          "Order"
+        ],
+        "min": 0,
+        "max": "*",
+        "base": {
+          "path": "MedicationRequest",
+          "min": 0,
+          "max": "*"
+        },
+        "constraint": [],
+        "isModifier": false,
+        "isSummary": false,
+        "mapping": []
+      },
+      {
+        "id": "MedicationRequest.id",
+        "path": "MedicationRequest.id",
+        "short": "Logical id of this artifact",
+        "definition": "The logical id of the resource, as used in the URL for the resource. Once assigned, this value never changes.",
+        "comment": "The only time that a resource does not have an id is when it is being submitted to the server using a create operation.",
+        "min": 0,
+        "max": "1",
+        "base": {
+          "path": "Resource.id",
+          "min": 0,
+          "max": "1"
+        },
+        "type": [
+          {
+            "extension": [
+              {
+                "url": "http://hl7.org/fhir/StructureDefinition/structuredefinition-fhir-type",
+                "valueUrl": "string"
+              }
+            ],
+            "code": "http://hl7.org/fhirpath/System.String"
+          }
+        ],
+        "isModifier": false,
+        "isSummary": true
+      }
+    ]
+  }
+}

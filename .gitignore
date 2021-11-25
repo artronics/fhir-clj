@@ -1,5 +1,7 @@
 .idea
 repl
+examples-json
+package
 /target
 /classes
 /checkouts
