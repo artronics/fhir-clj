@@ -80,13 +80,60 @@
   (assoc elem :cardinality (cardinality elem)))
 
 (defn add-field-name [elem]
-  "It adds :field-name which is the :path minus the `id.` part. the elem must be the one with path=`id.x.y.z`. i.e.
-  exclude the first element in :element and the rest can be considered as a field."
+  "It adds :field-name which is the :path minus the `id.` part. The elem is considered a field if path=`id.x.y.z`.
+  Otherwise, :field-name will be nil."
   (let [path (:path elem)
-        field-name (clojure.string/replace-first path #"\S+?\." "")]
+        field-name (when (clojure.string/includes? path ".")
+                     (clojure.string/replace-first path #"\S+?\." ""))]
     (assoc elem :field-name field-name)))
 
-(defn apply-element [name]
+(defn- field-hierarchy
+  [field, h, parent]
+  (let [segment #(map keyword (clojure.string/split % #"\."))
+        red-fn (fn [[h prev], n]
+                 [(derive h n prev) n])]
+    (reduce red-fn [h parent] (-> field :path segment))))
+
+(defn fields-hierarchy
+  [fields]
+  (let [h (make-hierarchy)
+        parent :fields-hierarchy
+        red-fn (fn [acc field]
+                 (first (field-hierarchy field acc parent)))]
+    (reduce red-fn h fields)))
+
+;; FIXME: It doesn't count for types where value is url like: http://hl7.org/fhirpath/System.String
+(defn sanitise-path
+  "It checks whether path is of form foo[x] and if yes it converts it to the form foo-Value1-Value2-...-ValueN
+  where ValueN is the type of the field. For example medication[x] can be either medicationReference or medicationCodeableConcept"
+  [element]
+  (let [path (:path element)]
+    (if (clojure.string/includes? path "[x]")
+      (let [type (:type element)
+            types (map (comp clojure.string/capitalize :code) type)
+            type-comb (str "-" (clojure.string/join "-" types))]
+        (clojure.string/replace path #"\[x\]" type-comb))
+      path)))
+
+(defn path->keyword [base path]
+  (let [segs (clojure.string/split
+               (if (empty? base) path (str base "." path))
+               #"\.")
+        name (last segs)
+        ns (clojure.string/join "." (butlast segs))]
+    (if (empty? ns)
+      (keyword name)
+      (keyword ns name))))
+
+(comment
+  (def elem {:path "med[x]" :type [{:code "Foo"} {:code "bar"}]})
+  (sanitise-path elem)
+  (namespace (path->keyword "kir.kos" "foo.bar.baz"))
+  (path->keyword "kir" "foo.bar")
+  (def fs [{:path "kir"} {:path "foo"} {:path "bar.kos"} {:path "foo.bar"} {:path "foo.baz"}])
+  (fields-hierarchy fs))
+
+(def elem->field
   (comp
     add-cardinality
-    #(add-field-name %)))
+    add-field-name))
