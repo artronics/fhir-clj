@@ -34,6 +34,7 @@ element: []                                  array
 When there is `foo[x]` it means, the field name can be different depending on the type. For example if it can
 have `reference` and `boolean` then the actual name of the field will be either `fooReference` or `fooBoolean`
 See `mediationrequest0312.json` and `mediationrequest0310.json`
+and [docs](http://hl7.org/fhir/2018Sep/fhirpath.html#polymorphism)
 
 -----
 
@@ -88,3 +89,9 @@ For the validation rules the first item in `element` has the most interesting in
   }
 ]
 ```
+
+Constraints related to ElementDefinition
+
+"human": "Types must be unique by code",
+"expression": "type.select(code).isDistinct()",
+
