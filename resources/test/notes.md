@@ -35,7 +35,9 @@ When there is `foo[x]` it means, the field name can be different depending on th
 have `reference` and `boolean` then the actual name of the field will be either `fooReference` or `fooBoolean`
 See `mediationrequest0312.json` and `mediationrequest0310.json`
 and [docs](http://hl7.org/fhir/2018Sep/fhirpath.html#polymorphism)
-
+-----
+**Compound fields**
+If a field has a type of `BackboneElement` then, it's a compound object. Example: `MedicationRequest.DispenseRequest`
 -----
 
 A case where `id` and `path` are not the same: UKCore MedicationRequest
