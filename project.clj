@@ -6,6 +6,7 @@
   :dependencies [[org.clojure/clojure "1.10.3"]
                  [org.clojure/data.json "2.4.0"]
                  [org.clojure/core.async "1.5.640"]
+                 [clj-time "0.15.2"]
                  [datascript "1.3.2"]
 
                  [aysylu/loom "1.0.2"]

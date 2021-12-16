@@ -24,6 +24,8 @@
     <orderEntry type="library" name="Maven: org.clojure:core.cache:1.0.207" level="project" />
     <orderEntry type="library" name="Maven: org.ow2.asm:asm:5.2" level="project" />
     <orderEntry type="library" name="Maven: org.clojure:tools.reader:1.3.2" level="project" />
+    <orderEntry type="library" name="Maven: clj-time:clj-time:0.15.2" level="project" />
+    <orderEntry type="library" name="Maven: joda-time:joda-time:2.10" level="project" />
     <orderEntry type="library" name="Maven: datascript:datascript:1.3.2" level="project" />
     <orderEntry type="library" name="Maven: persistent-sorted-set:persistent-sorted-set:0.1.4" level="project" />
     <orderEntry type="library" name="Maven: aysylu:loom:1.0.2" level="project" />

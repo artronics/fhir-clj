@@ -1,7 +1,8 @@
 (ns com.github.artronics.fhir.utils
   (:require [clojure.string :as string]
             [clojure.spec.alpha :as s]
-            [com.github.artronics.fhir.schema.specs :refer :all]))
+            [com.github.artronics.fhir.schema.specs :refer :all])
+  )
 
 (defn- eq-id? [a b] (= (:id a) (:id b)))
 
@@ -46,38 +47,6 @@
                    sn (-> % :args :snapshot)
                    df (-> % :args :differentials)]
                (check-returns ret sn df)))
-
-(defn cardinality [element]
-  "Cardinality based on {:base {:min x :max y} :min a :max b}. Whether base's max: " * " should be interpreted as array or not
-  is up to interpretation. Refer to the table here: https://build.fhir.org/profiling.html#cardinality"
-  (let [parse #(if (= String (type %))
-                 (if (= "*" %) -1 (Integer/parseInt %))
-                 %)
-        base-min (:min (:base element))
-        base-max (:max (:base element))
-        derived-min (:min element)
-        derived-max (:max element)]
-    (case (map parse [base-min base-max derived-min derived-max])
-      [0 1, 0 0] :not-used
-      [0 1, 0 1] :optional
-      [0 1, 1 1] :required
-      ;; Similar to above but the base has max: many which means it CAN BE represented as an array
-      [0 -1, 0 0] :emtpy
-      [0 -1, 0 1] :at-most-1
-      [0 -1, 0 -1] :optional-many
-      [0 -1, 1 1] :only-1
-      [0 -1, 1 -1] :at-least-1
-
-      [1 1, 1 1] :required
-
-      [1 -1, 1 1] :only-1
-      [1 -1, 1 -1] :at-least-1
-      ;; TODO: This only covers 0, 1 and "*" cases. We need to cover arbitrarily numbers e.x. :only-42
-      ;; FIXME: What is the default value if we can't figure out cardinality? Currently :optional
-      :optional)))
-
-(defn add-cardinality [elem]
-  (assoc elem :cardinality (cardinality elem)))
 
 (defn add-field-name [elem]
   "It adds :field-name which is the :path minus the `id.` part. The elem is considered a field if path=`id.x.y.z`.
@@ -135,5 +104,5 @@
 
 (def elem->field
   (comp
-    add-cardinality
     add-field-name))
+
