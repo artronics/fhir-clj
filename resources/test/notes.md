@@ -38,6 +38,7 @@ and [docs](http://hl7.org/fhir/2018Sep/fhirpath.html#polymorphism)
 -----
 **Compound fields**
 If a field has a type of `BackboneElement` then, it's a compound object. Example: `MedicationRequest.DispenseRequest`
+**NOTE** compound object can be a json object or an array of json objects depending on cardinality.
 -----
 
 A case where `id` and `path` are not the same: UKCore MedicationRequest
