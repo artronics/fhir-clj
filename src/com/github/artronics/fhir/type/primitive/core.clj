@@ -1,8 +1,7 @@
-(ns com.github.artronics.fhir.schema.type.core)
+(ns com.github.artronics.fhir.type.primitive.core
+  (:require [clojure.spec.alpha :as s]))
 
-(defn fhir-type
-  [element]
-  (let [type (:type element)] "foo"))
+(s/def ::string string?)
 
 (def fhir-path-primitives
   {"http://hl7.org/fhirpath/System.String"   :fhir.type.primitive/string
@@ -54,3 +53,5 @@
   (def type1 {:extension [{:url u, :valueUrl "string"}]})
   (which-fhir-type type1))
 
+(clojure.spec.alpha/valid? :fhir.type.primitive/positiveInt 3)
+(. java.time.Instant now)

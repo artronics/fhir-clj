@@ -1,4 +1,4 @@
-(ns com.github.artronics.fhir.generators
+(ns com.github.artronics.fhir.type.generator
   (:require [clojure.spec.alpha :as s]
             [clojure.spec.gen.alpha :as gen]
             [clj-time.core :as t]
@@ -13,6 +13,7 @@
 (def date-re #"([0-9]([0-9]([0-9][1-9]|[1-9]0)|[1-9]00)|[1-9]000)(-(0[1-9]|1[0-2])(-(0[1-9]|[1-2][0-9]|3[0-1]))?)?")
 (def instant-re #"([0-9]([0-9]([0-9][1-9]|[1-9]0)|[1-9]00)|[1-9]000)-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])T([01][0-9]|2[0-3]):[0-5][0-9]:([0-5][0-9]|60)(\.[0-9]+)?(Z|(\+|-)((0[0-9]|1[0-3]):[0-5][0-9]|14:00))")
 (def oid-re #"urn:oid:[0-2](\.(0|[1-9][0-9]*))+")
+(def uuid-re #"urn:uuid:[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}")
 
 (defn- pad-zero [d n]
   "Pad number d with zeros until length is n. Example d=42 n=4 -> 0042"
@@ -99,8 +100,11 @@
         r-inst (long (rand now))]
     (c/from-long r-inst)))
 
+;; FIXME: remove rand and use generator. It produces repetitive values
+;; FIXME: remove dependency on joda-time
 (defn instant-gen []
-  (let [gen #(tf/unparse (tf/formatter %) (rand-instant))
+  (let [instant ()
+        gen #(tf/unparse (tf/formatter %) (rand-instant))
         ;; FIXME: This doesn't produce offset.
         gen-tz #(tf/unparse (tf/formatter %) (t/to-time-zone (rand-instant) (t/time-zone-for-offset 2)))]
     (gen/one-of
@@ -126,6 +130,9 @@
         ms-str (interpose-gen ms ".")]
     (gen/bind n
               #(gen/fmap (fn [mi] (str "urn:oid:" % "." mi)) ms-str))))
+
+(defn uuid-gen []
+  (gen/fmap #(str "urn:uuid:" %) (gen/uuid)))
 
 (defn- alpha-numerics-gen
   ([min max] (gen/not-empty (gen/vector (gen/not-empty (gen/string-alphanumeric)) min max)))
