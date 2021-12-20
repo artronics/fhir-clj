@@ -1,4 +1,4 @@
-(ns com.github.artronics.fhir.type.generator
+(ns com.github.artronics.fhir.type.spec.generator
   (:require [clojure.spec.alpha :as s]
             [clojure.spec.gen.alpha :as gen]
             [clj-time.core :as t]

@@ -1,8 +1,8 @@
 (ns com.github.artronics.fhir.utils
   (:require [clojure.string :as string]
             [clojure.spec.alpha :as s]
-            [com.github.artronics.fhir.schema.specs :refer :all])
-  )
+            [com.github.artronics.fhir.schema.specs :refer :all]))
+
 
 (defn- eq-id? [a b] (= (:id a) (:id b)))
 

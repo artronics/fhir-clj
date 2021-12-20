@@ -1,7 +1,7 @@
-(ns com.github.artronics.fhir.type.primitive.spec
+(ns com.github.artronics.fhir.type.spec.primitive
   (:require [clojure.spec.alpha :as s]
             [clojure.spec.gen.alpha :as gen]
-            [com.github.artronics.fhir.type.generator :refer :all]))
+            [com.github.artronics.fhir.type.spec.generator :refer :all]))
 
 ;; FIXME: Technically this should be unicode not just ASCII
 (s/def :fhir.type.primitive/string string?)
@@ -48,6 +48,3 @@
 (s/def :fhir.type.primitive/instant
   (s/with-gen (s/and string? #(re-matches instant-re %))
               #(instant-gen)))
-
-(comment
-  (gen/sample (uuid-gen)))
